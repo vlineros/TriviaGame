@@ -1,18 +1,15 @@
-//to start game: need timer at 30 - new question displayed - options filled in for guessing
-//clear timeInt if question answered!
-//timer cannot stop and reset... unless it reaches 0
-// TURN ON RUN GAME AT THE BOTTOM
-
 var Game = {
   option1: $("#1"),
   option2: $("#2"),
   option3: $("#3"),
   option4: $("#4"),
   questionSpace: $("#question"),
+  blankEndSpace: $("#blank-for-end"),
   startButton: $("#start-button"),
   posterSpace: $("#poster-space"),
   qRight: 0,
   qWrong: 0,
+  isRunning: false,
   currentCorrectAnswer: "",
   currentPoster: "",
   currentTime: 0,
@@ -29,7 +26,8 @@ var Game = {
     1980,
     1983,
     1989,
-    1987
+    1987,
+    2007
   ],
   posters: [],
   ajaxSearches: [
@@ -74,6 +72,7 @@ var Game = {
   populateQA: function() {
     Game.setTimer();
     Game.posterSpace.hide();
+    Game.blankEndSpace.hide();
     var i = Math.floor(Math.random() * Game.questionTitles.length);
     Game.questionSpace.text(
       "What year did " + Game.questionTitles[i] + " come out?"
@@ -88,8 +87,9 @@ var Game = {
     for (var j = 0; j < 3; j++) {
       var x = Math.floor(Math.random() * Game.incorrectAnswers.length);
       answerPool.push(Game.incorrectAnswers[x]);
+      Game.incorrectAnswers.splice(x, 1);
+      console.log(Game.incorrectAnswers);
     }
-    console.log(answerPool);
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -97,7 +97,6 @@ var Game = {
       }
     }
     shuffleArray(answerPool);
-    console.log(answerPool);
     Game.option1.text(answerPool[0]);
     Game.option2.text(answerPool[1]);
     Game.option3.text(answerPool[2]);
@@ -109,13 +108,11 @@ var Game = {
     Game.startButton.html("Retry?");
     Game.startButton.show();
     Game.posterSpace.hide();
-    $("h2").hide();
+    $("h2").show();
     $("h3").hide();
     $("h4").hide();
-    Game.option1.text("You got " + Game.qRight + " question(s) correct!");
-    Game.option2.text("You got " + Game.qWrong + " question(s) wrong :(");
-    Game.option1.show();
-    Game.option2.show();
+    Game.questionSpace.text("You got " + Game.qRight + " question(s) correct!");
+    Game.blankEndSpace.text("You got " + Game.qWrong + " question(s) wrong :(");
     Game.qRight = 0;
     Game.qWrong = 0;
     Game.grabInfo();
